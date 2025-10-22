@@ -114,8 +114,6 @@ def bot_message(message):
                 bot.send_message(message.chat.id, '📣 Поиск завершен! Собеседник найден.\nЧтобы завершить чат нажмите /stop', reply_markup=stop_dialog())
                 bot.send_message(chat_two, '📣 Поиск завершен! Собеседник найден.\nЧтобы завершить чат нажмите /stop', reply_markup=stop_dialog())
             
-                
-         
         
         elif message.text == '📢 Сказать свой профиль':
             chat_info = db.get_active_chat(message.chat.id)
@@ -146,6 +144,26 @@ def bot_message(message):
                 bot.send_message(chat_info[1], message.text)
             else:
                 bot.send_message(message.chat.id, 'Вы не в чате')
+                
+
+@bot.message_handler(content_types=['sticker'])
+def bot_stickers(message):
+    if message.chat.type == 'private':
+        chat_info = db.get_active_chat(message.chat.id)
+        if chat_info:
+            bot.send_sticker(chat_info[1], message.sticker.file_id)
+    else:
+        bot.send_message(message.chat.id, 'Вы не в чате')
+        
+
+@bot.message_handler(content_types=['voice'])
+def bot_voice(message):
+    if message.chat.type == 'private':
+        chat_info = db.get_active_chat(message.chat.id)
+        if chat_info:
+            bot.send_voice(chat_info[1], message.voice.file_id)
+    else:
+        bot.send_message(message.chat.id, 'Вы не в чате')
             
             
 
