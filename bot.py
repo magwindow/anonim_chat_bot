@@ -7,13 +7,20 @@ from config import TOKEN
 bot = telebot.TeleBot(TOKEN)
 db = Database('users.db')
 
+def main_menu():
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    item1 = types.KeyboardButton('🔍 Поиск собеседника')
+    markup.add(item1)
+    return markup
+
 
 @bot.message_handler(commands=['start'])
 def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    item1 = types.KeyboardButton('🔍 Поиск собеседника')
-    markup.add(item1)
-    bot.send_message(message.chat.id, 'Привет, {0.first_name}!  Добро пожаловать в анонимный чат бот. Нажми на кнопку:  🔍 Поиск собеседника'
+    item1 = types.KeyboardButton('👨 Я парень')
+    item2 = types.KeyboardButton('👩 Я девушка')
+    markup.add(item1, item2)
+    bot.send_message(message.chat.id, 'Привет, {0.first_name}!  Добро пожаловать в анонимный чат бот. Укажите свой пол:  🔍 Поиск собеседника'
                      .format(message.from_user), reply_markup=markup)
     
     
@@ -66,6 +73,19 @@ def bot_message(message):
             
             db.remove_queue(message.chat.id)
             bot.send_message(message.chat.id, '❌ Поиск остановлен', reply_markup=markup)
+            
+        elif message.text == '👨 Я парень':
+            if db.set_gender(message.chat.id, 'male'):
+                bot.send_message(message.chat.id, '✅ Ваш пол успешно добавлен', reply_markup=main_menu())
+            else:
+                bot.send_message(message.chat.id, '📝 Ваш пол уже указан')   
+                
+        elif message.text == '👩 Я девушка':    
+            if db.set_gender(message.chat.id, 'female'):
+                bot.send_message(message.chat.id, '✅ Ваш пол успешно добавлен', reply_markup=main_menu())
+            else:
+                bot.send_message(message.chat.id, '📝 Ваш пол уже указан')
+            
         
         else:
             chat_info = db.get_active_chat(message.chat.id)

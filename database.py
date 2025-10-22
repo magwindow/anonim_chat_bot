@@ -17,14 +17,43 @@ class Database:
         with self.connection:
             self.cursor.execute("DELETE FROM chats WHERE id=?", (id_chat,))
             
+    def set_gender(self, chat_id, gender):
+        with self.connection:
+            user = self.cursor.execute("SELECT * FROM users WHERE chat_id=?", (chat_id,)).fetchmany(1)
+            if not bool(len(user)):
+                self.cursor.execute("INSERT INTO users (chat_id, gender) VALUES (?, ?)", (chat_id, gender))
+                return True
+            else:
+                return False
+            
+    def get_gender(self, chat_id):
+        with self.connection:
+            user = self.cursor.execute("SELECT * FROM users WHERE chat_id=?", (chat_id,)).fetchmany(1)
+            if bool(len(user)):
+                for row in user:
+                    return row[2]
+            else:
+                return False
+            
+    def get_gender_chat(self, gender):
+        with self.connection:
+            chat = self.cursor.execute("SELECT * FROM users WHERE gender=?", (gender,)).fetchmany(1)
+            if bool(len(chat)):
+                for row in chat:
+                    user_info = row[1], row[2]
+                    return user_info
+            else:
+                return (0,)
+            
     def get_chat(self):
         with self.connection:
             chat = self.cursor.execute("SELECT * FROM queue").fetchmany(1)
             if bool(len(chat)):
                 for row in chat:
-                    return row[1]
+                    user_info = row[1], row[2]
+                    return user_info
             else:
-                return False
+                return (0,)
             
     def create_chat(self, chat_one, chat_two):
         with self.connection:
