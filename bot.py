@@ -33,8 +33,17 @@ def bot_message(message):
             item1 = types.KeyboardButton('❌ Отменить поиск')
             markup.add(item1)
             
-            db.add_queue(message.chat.id)
-            bot.send_message(message.chat.id, '🔎 Ищем людей....', reply_markup=markup)
+            chat_two = db.get_chat()
+            
+            if not db.create_chat(message.chat.id, chat_two):
+                db.add_queue(message.chat.id)
+                bot.send_message(message.chat.id, '🔎 Ищем людей....', reply_markup=markup)
+            else:
+                markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+                item1 = types.KeyboardButton('✋ Завершить диалог')
+                markup.add(item1)
+                bot.send_message(message.chat.id, '📣 Поиск завершен! Собеседник найден.', reply_markup=markup)
+                bot.send_message(chat_two, '📣 Поиск завершен! Собеседник найден.', reply_markup=markup)
         
         elif message.text == '❌ Отменить поиск':
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
