@@ -5,9 +5,9 @@ class Database:
         self.connection = sqlite3.connect(database_file, check_same_thread=False)
         self.cursor = self.connection.cursor()
         
-    def add_queue(self, chat_id):
+    def add_queue(self, chat_id, gender):
         with self.connection:
-            self.cursor.execute("INSERT INTO queue (chat_id) VALUES (?)", (chat_id,))
+            self.cursor.execute("INSERT INTO queue (chat_id, gender) VALUES (?, ?)", (chat_id, gender))
             
     def remove_queue(self, chat_id):
         with self.connection:
