@@ -1,9 +1,11 @@
 import telebot
 from telebot import types
 
+from database import Database
 from config import TOKEN
 
 bot = telebot.TeleBot(TOKEN)
+db = Database('users.db')
 
 
 @bot.message_handler(commands=['start'])
@@ -16,7 +18,7 @@ def start(message):
     
     
 @bot.message_handler(commands=['menu'])
-def start(message):
+def menu(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = types.KeyboardButton('🔍 Поиск собеседника')
     markup.add(item1)
@@ -30,7 +32,10 @@ def bot_message(message):
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
             item1 = types.KeyboardButton('❌ Отменить поиск')
             markup.add(item1)
-             
+            
+            db.add_queue(message.chat.id)
+            bot.send_message(message.chat.id, '🔎 Ищем людей....', reply_markup=markup)
+            
     
     
     
