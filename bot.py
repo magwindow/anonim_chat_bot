@@ -13,7 +13,7 @@ def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = types.KeyboardButton('🔍 Поиск собеседника')
     markup.add(item1)
-    bot.send_message(message.chat.id, 'Привет, {0.first_name}!  Добро пожаловать в анонимный чат бот. Нажми на кнопку "🔍 Поиск собеседника"'
+    bot.send_message(message.chat.id, 'Привет, {0.first_name}!  Добро пожаловать в анонимный чат бот. Нажми на кнопку:  🔍 Поиск собеседника'
                      .format(message.from_user), reply_markup=markup)
     
     
@@ -35,6 +35,14 @@ def bot_message(message):
             
             db.add_queue(message.chat.id)
             bot.send_message(message.chat.id, '🔎 Ищем людей....', reply_markup=markup)
+        
+        elif message.text == '❌ Отменить поиск':
+            markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+            item1 = types.KeyboardButton('🔍 Поиск собеседника')
+            markup.add(item1)
+            
+            db.remove_queue(message.chat.id)
+            bot.send_message(message.chat.id, '❌ Поиск остановлен', reply_markup=markup)
             
     
     
